@@ -7,15 +7,17 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController: UIViewController {
     var currentWordLabel: UILabel!
     var answersLabel: UITextField!
     var scoresLabel: UILabel!
+    var chancesLabel: UILabel!
     
     var usedLetters = [String]()
     var allWords = [String]()
     
     var currentWord = ""
+    var promptWord = ""
     
     var wrongAnswers = 0
     var score = 0
@@ -32,11 +34,18 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
         allWords.shuffle()
         currentWord = allWords[0]
-        print(currentWord)
+        print("Current word: \(currentWord)")
 //        title = "Current word: \(currentWord). Score: \(score)"
         
         view = UIView()
         view.backgroundColor = .white
+        
+        chancesLabel = UILabel()
+        chancesLabel.translatesAutoresizingMaskIntoConstraints = false
+        chancesLabel.text = "Chance: 7"
+        chancesLabel.textAlignment = .right
+        chancesLabel.font = UIFont.systemFont(ofSize: 20)
+        view.addSubview(chancesLabel)
         
         scoresLabel = UILabel()
         scoresLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +68,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         answersLabel.delegate = self
         answersLabel.translatesAutoresizingMaskIntoConstraints = false
         answersLabel.placeholder = "Enter Letter"
+        answersLabel.returnKeyType = .done
         answersLabel.font = UIFont.systemFont(ofSize: 30)
         answersLabel.textAlignment = .center
         answersLabel.backgroundColor = .red
@@ -86,6 +96,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(usedLettersView)
         
         NSLayoutConstraint.activate([
+            chancesLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            chancesLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -100),
+            
             scoresLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             scoresLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             
@@ -116,11 +129,25 @@ class ViewController: UIViewController, UITextFieldDelegate {
             
         ])
         
+        // add grid for used letters here
+        
+        // functionality for displaying word
+        usedLetters.append("i")
+        displayWord()
+        
     }
     
     @objc func submitTapped(sender: UIButton) {
+        submit()
+    }
+    
+    func submit() {
         guard let submittedLetter = answersLabel.text else { return }
-        print(submittedLetter)
+        print("Submitted Letter: \(submittedLetter)")
+        usedLetters.append(submittedLetter)
+        print("usedLetters: \(usedLetters)")
+        
+        answersLabel.text = ""
     }
     
     @objc func clearTapped(sender: UIButton) {
@@ -131,6 +158,23 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    func displayWord() {
+        for letter in currentWord {
+            let strLetter = String(letter)
+            if usedLetters.contains(strLetter) {
+                promptWord += strLetter
+            } else {
+                promptWord += "?"
+            }
+        }
+        currentWordLabel.text = promptWord.uppercased()
+    }
+    
+    
+
+}
+
+extension ViewController: UITextFieldDelegate {
     // set textField to 1 letter max
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = answersLabel.text ?? ""
@@ -141,6 +185,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         return updatedText.count <= 1
     }
-
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        submit()
+        // dismiss keyboard
+        textField.resignFirstResponder()
+        return true
+    }
+    
 }
 
