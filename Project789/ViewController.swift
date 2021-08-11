@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
     var currentWordLabel: UILabel!
     var answersLabel: UITextField!
     var scoresLabel: UILabel!
@@ -22,6 +22,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view.
         
         if let filepathURL = Bundle.main.url(forResource: "wordList", withExtension: "txt") {
@@ -53,13 +54,16 @@ class ViewController: UIViewController {
         currentWordLabel.backgroundColor = .green
         view.addSubview(currentWordLabel)
         
+        
         answersLabel = UITextField()
+        answersLabel.delegate = self
         answersLabel.translatesAutoresizingMaskIntoConstraints = false
         answersLabel.placeholder = "Enter Letter"
         answersLabel.font = UIFont.systemFont(ofSize: 30)
         answersLabel.textAlignment = .center
         answersLabel.backgroundColor = .red
         view.addSubview(answersLabel)
+        
         
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
@@ -115,13 +119,28 @@ class ViewController: UIViewController {
     }
     
     @objc func submitTapped(sender: UIButton) {
-        
+        guard let submittedLetter = answersLabel.text else { return }
+        print(submittedLetter)
     }
     
     @objc func clearTapped(sender: UIButton) {
         
     }
 
+    func loadWord() {
+        
+    }
+    
+    // set textField to 1 letter max
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = answersLabel.text ?? ""
+        
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+        
+        return updatedText.count <= 1
+    }
 
 }
 
