@@ -21,11 +21,14 @@ class ViewController: UIViewController {
     
     var wrongAnswers = 0
     var score = 0
+    var chance = 7 {
+        didSet {
+            chancesLabel.text = "Chance: \(chance)"
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
         
         if let filepathURL = Bundle.main.url(forResource: "wordList", withExtension: "txt") {
             if let wordContents = try? String(contentsOf: filepathURL) {
@@ -35,7 +38,6 @@ class ViewController: UIViewController {
         allWords.shuffle()
         currentWord = allWords[0]
         print("Current word: \(currentWord)")
-//        title = "Current word: \(currentWord). Score: \(score)"
         
         view = UIView()
         view.backgroundColor = .white
@@ -63,7 +65,6 @@ class ViewController: UIViewController {
         currentWordLabel.backgroundColor = .green
         view.addSubview(currentWordLabel)
         
-        
         answersLabel = UITextField()
         answersLabel.delegate = self
         answersLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -73,7 +74,6 @@ class ViewController: UIViewController {
         answersLabel.textAlignment = .center
         answersLabel.backgroundColor = .red
         view.addSubview(answersLabel)
-        
         
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
@@ -131,10 +131,7 @@ class ViewController: UIViewController {
         
         // add grid for used letters here
         
-        // functionality for displaying word
-        usedLetters.append("i")
         displayWord()
-        
     }
     
     @objc func submitTapped(sender: UIButton) {
@@ -142,10 +139,19 @@ class ViewController: UIViewController {
     }
     
     func submit() {
-        guard let submittedLetter = answersLabel.text else { return }
-        print("Submitted Letter: \(submittedLetter)")
+        guard let submittedLetter = answersLabel.text?.lowercased() else { return }
+        print("Submitted Letter: \(submittedLetter)", "typeOf: \(type(of: submittedLetter))")
         usedLetters.append(submittedLetter)
         print("usedLetters: \(usedLetters)")
+        
+        if currentWord.contains(submittedLetter) {
+            displayWord()
+        } else {
+            chance -= 1
+        }
+        
+        // add game over alert if chance == 0
+        
         
         answersLabel.text = ""
     }
@@ -167,10 +173,26 @@ class ViewController: UIViewController {
                 promptWord += "?"
             }
         }
+        print("PromptWord: \(promptWord)")
         currentWordLabel.text = promptWord.uppercased()
+        
+        if promptWord == currentWord {
+            let winner = true
+            gameOver(winner)
+        }
+        
+        promptWord = ""
     }
     
-    
+    func gameOver(_ winner: Bool = false, _ loser: Bool = false) {
+        if winner {
+            print("GAME OVER! YOU WIN")
+            // add alert to restart
+        } else {
+            print("GAME OVER! YOU LOSE")
+        }
+        
+    }
 
 }
 
