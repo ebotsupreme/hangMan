@@ -70,7 +70,6 @@ class ViewController: UIViewController {
         currentWordLabel.font = UIFont.systemFont(ofSize: 46)
         currentWordLabel.textAlignment = .center
         currentWordLabel.numberOfLines = 0
-        currentWordLabel.backgroundColor = .green
         
         answersLabel = UITextField()
         answersLabel.delegate = self
@@ -79,7 +78,6 @@ class ViewController: UIViewController {
         answersLabel.returnKeyType = .done
         answersLabel.font = UIFont.systemFont(ofSize: 30)
         answersLabel.textAlignment = .center
-        answersLabel.backgroundColor = .red
         
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
@@ -96,16 +94,13 @@ class ViewController: UIViewController {
         usedLettersView.layer.borderWidth = 1
         usedLettersView.layer.borderColor = UIColor.gray.cgColor
         usedLettersView.setContentHuggingPriority(UILayoutPriority(1), for: .vertical)
-        usedLettersView.backgroundColor = .cyan
         
         let topHalfContainerView = UIView()
         topHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
-        topHalfContainerView.backgroundColor = .blue
         view.addSubview(topHalfContainerView)
         
         let bottomHalfContainerView = UIView()
         bottomHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
-        bottomHalfContainerView.backgroundColor = .gray
         view.addSubview(bottomHalfContainerView)
         
         topHalfContainerView.addSubview(chancesLabel)
@@ -174,21 +169,17 @@ class ViewController: UIViewController {
         
         if transition {
             if UIDevice.current.orientation.isLandscape  {
-                print("Device is in landscape mode")
                 rowCount = 0...2
                 colCount = 0...9
             } else {
-                print("Device is in portrait mode")
                 rowCount = 0...5
                 colCount = 0...4
             }
         } else {
             if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-                print("Device is in landscape mode")
                 rowCount = 0...2
                 colCount = 0...9
             } else {
-                print("Device is in portrait mode")
                 rowCount = 0...5
                 colCount = 0...4
             }
@@ -220,7 +211,6 @@ class ViewController: UIViewController {
                 letter.sizeToFit()
                 letter.textAlignment = .center
                 letter.text = "A"
-                letter.backgroundColor = .yellow
                 let frame = CGRect(x: column * width, y: height * row, width: width, height: height)
                 letter.frame = frame
                 usedLettersView.addSubview(letter)
@@ -232,7 +222,6 @@ class ViewController: UIViewController {
     func shuffleWords () {
         allWords.shuffle()
         currentWord = allWords[0]
-        print("Current word: \(currentWord)")
     }
     
     @objc func submitTapped(sender: UIButton) {
@@ -241,7 +230,6 @@ class ViewController: UIViewController {
     
     func submit() {
         guard let submittedLetter = answersLabel.text?.lowercased() else { return }
-        print("Submitted Letter: \(submittedLetter)", "typeOf: \(type(of: submittedLetter))")
         
         if submittedLetter == "" { return }
         if usedLetters.contains(submittedLetter) {
@@ -250,7 +238,6 @@ class ViewController: UIViewController {
         }
         
         usedLetters.append(submittedLetter)
-        print("usedLetters: \(usedLetters)")
         
         displayUsedLetters(submittedLetter)
         
@@ -259,7 +246,9 @@ class ViewController: UIViewController {
             displayWord()
         } else {
             chance -= 1
-            score -= 1
+            if score != 0 {
+                score -= 1
+            }
         }
         
         answersLabel.text = ""
@@ -285,7 +274,7 @@ class ViewController: UIViewController {
     func loadWord() {
         shuffleWords()
         usedLetters = []
-        chance = 77777
+        chance = 7
         score = 0
         displayWord()
         determinMyDeviceOrientation()
@@ -310,7 +299,6 @@ class ViewController: UIViewController {
             }
         }
         
-        print("PromptWord: \(promptWord)")
         currentWordLabel.text = promptWord.uppercased()
         
         if promptWord == currentWord {
@@ -329,11 +317,9 @@ class ViewController: UIViewController {
         var message: String
         
         if youWin {
-            print("GAME OVER! YOU WIN")
             status  = "Win"
             message = "Good Game!"
         } else {
-            print("GAME OVER! YOU LOSE")
             status = "Lose"
             message = "You ran out of chances."
         }
