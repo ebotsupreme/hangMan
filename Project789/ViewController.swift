@@ -201,7 +201,7 @@ class ViewController: UIViewController {
     }
     
     @objc func clearTapped(sender: UIButton) {
-        
+        answersLabel.text = ""
     }
 
     func loadWord() {
@@ -295,10 +295,6 @@ extension ViewController: UITextFieldDelegate {
 }
 
 /* TODO
-2. add alerts for winning and losing.
-3. add restart functionality
-4. add score functionality
- 4b. dont let chance reach negative
 5. add clear button funcionality
 6. update ui for landscape
 7. add GCD
