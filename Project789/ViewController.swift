@@ -36,13 +36,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let filepathURL = Bundle.main.url(forResource: "wordList", withExtension: "txt") {
-            if let wordContents = try? String(contentsOf: filepathURL) {
-                allWords = wordContents.components(separatedBy: "\n")
+        DispatchQueue.global().async { [weak self] in
+            if let filepathURL = Bundle.main.url(forResource: "wordList", withExtension: "txt") {
+                if let wordContents = try? String(contentsOf: filepathURL) {
+                    self?.allWords = wordContents.components(separatedBy: "\n")
+                }
             }
         }
-        
-//        shuffleWords()
         
         view = UIView()
         view.backgroundColor = .white
@@ -303,7 +303,5 @@ extension ViewController: UITextFieldDelegate {
 /* TODO
 6. update ui for landscape
 7. add GCD
-8. bugs
- c. dismiss keyboard when tapped outside
  */
 
