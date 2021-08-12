@@ -129,7 +129,22 @@ class ViewController: UIViewController {
             
         ])
         
-        // add grid for used letters here
+        let width = 63
+        let height = 40
+        
+        // grid for used letters
+        for row in 0...5 {
+            for column in 0...4 {
+                let letter = UILabel()
+                letter.font = UIFont.systemFont(ofSize: 26)
+                letter.textAlignment = .center
+                letter.text = "A"
+                letter.backgroundColor = .yellow
+                let frame = CGRect(x: column * width, y: height * row, width: width, height: height)
+                letter.frame = frame
+                usedLettersView.addSubview(letter)
+            }
+        }
         
         displayWord()
     }
@@ -219,4 +234,16 @@ extension ViewController: UITextFieldDelegate {
     }
     
 }
+
+/* TODO tomorrow
+1. work on the used words container
+ a. create nested forloop to display letters used
+ b. hide and unhide letters.
+2. add alerts for winning and losing.
+3. add restart functionality
+4. add score functionality
+5. add clear button funcionality
+6. update ui for landscape
+ 
+ */
 
