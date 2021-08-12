@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     var answersLabel: UITextField!
     var scoresLabel: UILabel!
     var chancesLabel: UILabel!
+    var usedLettersView: UIView!
     
     var usedLetters = [String]()
     var allWords = [String]()
@@ -27,11 +28,14 @@ class ViewController: UIViewController {
             scoresLabel.text = "Score: \(score)"
         }
     }
-    var chance = 2 {
+    var chance = 7 {
         didSet {
             chancesLabel.text = "Chance(s): \(chance)"
         }
     }
+    
+    var rowCount: ClosedRange<Int> = 0...5
+    var colCount: ClosedRange<Int> = 0...4
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,23 +56,21 @@ class ViewController: UIViewController {
         chancesLabel.text = "Chance(s): 7"
         chancesLabel.textAlignment = .right
         chancesLabel.font = UIFont.systemFont(ofSize: 20)
-        view.addSubview(chancesLabel)
         
         scoresLabel = UILabel()
         scoresLabel.translatesAutoresizingMaskIntoConstraints = false
         scoresLabel.text = "Score: 0"
         scoresLabel.font = UIFont.systemFont(ofSize: 20)
         scoresLabel.textAlignment = .right
-        view.addSubview(scoresLabel)
         
         currentWordLabel = UILabel()
         currentWordLabel.translatesAutoresizingMaskIntoConstraints = false
+        currentWordLabel.sizeToFit()
         currentWordLabel.text = "????????"
-        currentWordLabel.font = UIFont.systemFont(ofSize: 48)
+        currentWordLabel.font = UIFont.systemFont(ofSize: 46)
         currentWordLabel.textAlignment = .center
         currentWordLabel.numberOfLines = 0
         currentWordLabel.backgroundColor = .green
-        view.addSubview(currentWordLabel)
         
         answersLabel = UITextField()
         answersLabel.delegate = self
@@ -78,72 +80,144 @@ class ViewController: UIViewController {
         answersLabel.font = UIFont.systemFont(ofSize: 30)
         answersLabel.textAlignment = .center
         answersLabel.backgroundColor = .red
-        view.addSubview(answersLabel)
         
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
         submit.setTitle("SUBMIT", for: .normal)
         submit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
-        view.addSubview(submit)
         
         let clear = UIButton(type: .system)
         clear.translatesAutoresizingMaskIntoConstraints = false
         clear.setTitle("CLEAR", for: .normal)
         clear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
-        view.addSubview(clear)
         
-        let usedLettersView = UIView()
+        usedLettersView = UIView()
         usedLettersView.translatesAutoresizingMaskIntoConstraints = false
         usedLettersView.layer.borderWidth = 1
         usedLettersView.layer.borderColor = UIColor.gray.cgColor
         usedLettersView.setContentHuggingPriority(UILayoutPriority(1), for: .vertical)
         usedLettersView.backgroundColor = .cyan
-        view.addSubview(usedLettersView)
+        
+        let topHalfContainerView = UIView()
+        topHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
+        topHalfContainerView.backgroundColor = .blue
+        view.addSubview(topHalfContainerView)
+        
+        let bottomHalfContainerView = UIView()
+        bottomHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
+        bottomHalfContainerView.backgroundColor = .gray
+        view.addSubview(bottomHalfContainerView)
+        
+        topHalfContainerView.addSubview(chancesLabel)
+        topHalfContainerView.addSubview(scoresLabel)
+        topHalfContainerView.addSubview(currentWordLabel)
+        topHalfContainerView.addSubview(answersLabel)
+        topHalfContainerView.addSubview(submit)
+        topHalfContainerView.addSubview(clear)
+        bottomHalfContainerView.addSubview(usedLettersView)
         
         NSLayoutConstraint.activate([
-            chancesLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            chancesLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -100),
+            topHalfContainerView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            topHalfContainerView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            topHalfContainerView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            topHalfContainerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5),
             
-            scoresLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            scoresLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            bottomHalfContainerView.topAnchor.constraint(equalTo: topHalfContainerView.bottomAnchor),
+            bottomHalfContainerView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            bottomHalfContainerView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            bottomHalfContainerView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            
+            chancesLabel.topAnchor.constraint(equalTo: topHalfContainerView.topAnchor),
+            chancesLabel.trailingAnchor.constraint(equalTo: topHalfContainerView.trailingAnchor, constant: -100),
+            
+            scoresLabel.topAnchor.constraint(equalTo: topHalfContainerView.topAnchor),
+            scoresLabel.trailingAnchor.constraint(equalTo: topHalfContainerView.trailingAnchor),
             
             currentWordLabel.topAnchor.constraint(equalTo: scoresLabel.bottomAnchor, constant: 20),
-            currentWordLabel.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 15),
-            currentWordLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
-            currentWordLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            currentWordLabel.heightAnchor.constraint(equalToConstant: 100),
+            currentWordLabel.leadingAnchor.constraint(equalTo: topHalfContainerView.leadingAnchor),
+            currentWordLabel.trailingAnchor.constraint(equalTo: topHalfContainerView.trailingAnchor),
+            currentWordLabel.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor),
+            currentWordLabel.heightAnchor.constraint(equalTo: topHalfContainerView.heightAnchor, multiplier: 0.3),
             
             answersLabel.topAnchor.constraint(equalTo: currentWordLabel.bottomAnchor, constant: 20),
-            answersLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
-            answersLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            answersLabel.heightAnchor.constraint(equalToConstant: 70),
+            answersLabel.widthAnchor.constraint(equalTo: topHalfContainerView.widthAnchor, multiplier: 0.6),
+            answersLabel.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor),
+            answersLabel.heightAnchor.constraint(equalTo: topHalfContainerView.heightAnchor, multiplier: 0.2),
             
-            submit.topAnchor.constraint(equalTo: answersLabel.bottomAnchor, constant: 20),
-            submit.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -60),
-            submit.heightAnchor.constraint(equalToConstant: 44),
+            submit.topAnchor.constraint(equalTo: answersLabel.bottomAnchor, constant: 10),
+            submit.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor, constant: -60),
+            submit.heightAnchor.constraint(equalTo: topHalfContainerView.heightAnchor, multiplier: 0.1),
             
-            clear.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 60),
+            clear.topAnchor.constraint(equalTo: answersLabel.bottomAnchor, constant: 10),
+            clear.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor, constant: 60),
             clear.centerYAnchor.constraint(equalTo: submit.centerYAnchor),
-            clear.heightAnchor.constraint(equalToConstant: 44),
+            clear.heightAnchor.constraint(equalTo: topHalfContainerView.heightAnchor, multiplier: 0.1),
             
-            usedLettersView.topAnchor.constraint(equalTo: submit.bottomAnchor, constant: 20),
-            usedLettersView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 15),
-            usedLettersView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
+            usedLettersView.topAnchor.constraint(equalTo: bottomHalfContainerView.topAnchor, constant: 10),
+            usedLettersView.leadingAnchor.constraint(equalTo: bottomHalfContainerView.leadingAnchor),
+            usedLettersView.trailingAnchor.constraint(equalTo: bottomHalfContainerView.trailingAnchor),
             usedLettersView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            usedLettersView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
+            usedLettersView.bottomAnchor.constraint(equalTo: bottomHalfContainerView.bottomAnchor)
             
         ])
+
+        determinMyDeviceOrientation()
+
+        loadWord()
         
-        let width = 63
+        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+        view.addGestureRecognizer(tap)
+        
+    }
+ 
+    func determinMyDeviceOrientation(_ transition: Bool = false) {
+        
+        if transition {
+            if UIDevice.current.orientation.isLandscape  {
+                print("Device is in landscape mode")
+                rowCount = 0...2
+                colCount = 0...9
+            } else {
+                print("Device is in portrait mode")
+                rowCount = 0...5
+                colCount = 0...4
+            }
+        } else {
+            if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+                print("Device is in landscape mode")
+                rowCount = 0...2
+                colCount = 0...9
+            } else {
+                print("Device is in portrait mode")
+                rowCount = 0...5
+                colCount = 0...4
+            }
+        }
+       
+        createUsedLettersGrid(rowCount, colCount)
+        setLettersForUsedLettersView()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let transition = true
+        determinMyDeviceOrientation(transition)
+    }
+    
+    func createUsedLettersGrid(_ rowCount: ClosedRange<Int>, _ colCount: ClosedRange<Int>) {
+        let width = 65
         let height = 40
-//        let alphabets = "abcdefghijklmnopqrstuvwxyz"
+        
+        // empty usedLettersView & allLetters
+        usedLettersView.subviews.forEach({ $0.removeFromSuperview() })
+        allLetters = []
         
         // grid for used letters
-        for row in 0...5 {
-            for column in 0...4 {
-                if row == 5 && column >= 1 { continue }
+        for row in rowCount {
+            for column in colCount {
+                if row == 5 && column >= 1 || row == 2 && column >= 6 { continue }
                 let letter = UILabel()
-                letter.font = UIFont.systemFont(ofSize: 26)
+                letter.font = UIFont.systemFont(ofSize: 24)
+                letter.sizeToFit()
                 letter.textAlignment = .center
                 letter.text = "A"
                 letter.backgroundColor = .yellow
@@ -153,11 +227,6 @@ class ViewController: UIViewController {
                 allLetters.append(letter)
             }
         }
-
-        loadWord()
-        
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
-        view.addGestureRecognizer(tap)
     }
     
     func shuffleWords () {
@@ -195,12 +264,10 @@ class ViewController: UIViewController {
         
         answersLabel.text = ""
         
-        // add game over alert if chance == 0
         if chance == 0 {
             let youWin = false
             gameOver(youWin)
         }
-        
     }
     
     func displayUsedLetters(_ letter: String) {
@@ -208,7 +275,6 @@ class ViewController: UIViewController {
             if allLetters[i].text == letter.uppercased() {
                 allLetters[i].isHidden = false
             }
-            
         }
     }
     
@@ -219,11 +285,13 @@ class ViewController: UIViewController {
     func loadWord() {
         shuffleWords()
         usedLetters = []
-        chance = 1
+        chance = 77777
         score = 0
         displayWord()
-        
-        // set used letters
+        determinMyDeviceOrientation()
+    }
+    
+    func setLettersForUsedLettersView() {
         for (index, alphabet) in alphabets.enumerated() {
             if allLetters.count == alphabets.count {
                 allLetters[index].text = String(alphabet).uppercased()
@@ -299,9 +367,4 @@ extension ViewController: UITextFieldDelegate {
     }
     
 }
-
-/* TODO
-6. update ui for landscape
-7. add GCD
- */
 
