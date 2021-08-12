@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     var allWords = [String]()
     var allLetters = [UILabel]()
     
+    let alphabets = "abcdefghijklmnopqrstuvwxyz"
     var currentWord = ""
     var promptWord = ""
     
@@ -24,7 +25,7 @@ class ViewController: UIViewController {
     var score = 0
     var chance = 2 {
         didSet {
-            chancesLabel.text = "Chance: \(chance)"
+            chancesLabel.text = "Chance(s): \(chance)"
         }
     }
 
@@ -163,6 +164,8 @@ class ViewController: UIViewController {
         usedLetters.append(submittedLetter)
         print("usedLetters: \(usedLetters)")
         
+        displayUsedLetters(submittedLetter)
+        
         if currentWord.contains(submittedLetter) {
             displayWord()
         } else {
@@ -175,6 +178,15 @@ class ViewController: UIViewController {
         if chance == 0 {
             let youWin = false
             gameOver(youWin)
+        }
+    }
+    
+    func displayUsedLetters(_ letter: String) {
+        for i in 0...25 {
+            if allLetters[i].text == letter.uppercased() {
+                allLetters[i].isHidden = false
+            }
+            
         }
     }
     
@@ -193,8 +205,6 @@ class ViewController: UIViewController {
         displayWord()
         
         // set used letters
-        let alphabets = "abcdefghijklmnopqrstuvwxyz"
-        
         for (index, alphabet) in alphabets.enumerated() {
             if allLetters.count == alphabets.count {
                 allLetters[index].text = String(alphabet).uppercased()
@@ -213,6 +223,7 @@ class ViewController: UIViewController {
                 promptWord += "?"
             }
         }
+        
         print("PromptWord: \(promptWord)")
         currentWordLabel.text = promptWord.uppercased()
         
@@ -261,7 +272,7 @@ extension ViewController: UITextFieldDelegate {
 /* TODO tomorrow
 1. x work on the used words container
  a. x create nested forloop to display letters used
- b. hide and unhide letters.
+ b. x hide and unhide letters.
 2. add alerts for winning and losing.
 3. add restart functionality
 4. add score functionality
