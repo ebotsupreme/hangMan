@@ -321,7 +321,7 @@ class ViewController: UIViewController {
             message = "Good Game!"
         } else {
             status = "Lose"
-            message = "You ran out of chances."
+            message = "You ran out of chances.\n Your word was: \(currentWord)\n"
         }
         
         let ac = UIAlertController(title: "You \(status)!", message: "\(message) Your score: \(score)", preferredStyle: .alert)
