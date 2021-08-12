@@ -190,6 +190,7 @@ class ViewController: UIViewController {
             displayWord()
         } else {
             chance -= 1
+            score -= 1
         }
         
         answersLabel.text = ""
@@ -199,6 +200,7 @@ class ViewController: UIViewController {
             let youWin = false
             gameOver(youWin)
         }
+        
     }
     
     func displayUsedLetters(_ letter: String) {
@@ -216,12 +218,9 @@ class ViewController: UIViewController {
 
     func loadWord() {
         shuffleWords()
-        
         usedLetters = []
-        
         chance = 1
         score = 0
-        
         displayWord()
         
         // set used letters
@@ -231,7 +230,6 @@ class ViewController: UIViewController {
             }
             allLetters[index].isHidden = true
         }
- 
     }
     
     func displayWord() {
@@ -257,6 +255,8 @@ class ViewController: UIViewController {
     }
     
     func gameOver(_ youWin: Bool) {
+        answersLabel.resignFirstResponder()
+        
         var status: String
         var message: String
         
