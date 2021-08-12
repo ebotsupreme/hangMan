@@ -155,6 +155,9 @@ class ViewController: UIViewController {
         }
 
         loadWord()
+        
+        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+        view.addGestureRecognizer(tap)
     }
     
     func shuffleWords () {
@@ -301,8 +304,6 @@ extension ViewController: UITextFieldDelegate {
 6. update ui for landscape
 7. add GCD
 8. bugs
- a. dont let user submit a letter thats already been used
- b. dont let user submit empty.
  c. dismiss keyboard when tapped outside
  */
 
