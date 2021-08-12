@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     
     var usedLetters = [String]()
     var allWords = [String]()
+    var allLetters = [UILabel]()
     
     var currentWord = ""
     var promptWord = ""
@@ -131,10 +132,12 @@ class ViewController: UIViewController {
         
         let width = 63
         let height = 40
+//        let alphabets = "abcdefghijklmnopqrstuvwxyz"
         
         // grid for used letters
         for row in 0...5 {
             for column in 0...4 {
+                if row == 5 && column >= 1 { continue }
                 let letter = UILabel()
                 letter.font = UIFont.systemFont(ofSize: 26)
                 letter.textAlignment = .center
@@ -143,10 +146,11 @@ class ViewController: UIViewController {
                 let frame = CGRect(x: column * width, y: height * row, width: width, height: height)
                 letter.frame = frame
                 usedLettersView.addSubview(letter)
+                allLetters.append(letter)
             }
         }
-        
-        displayWord()
+
+        loadWord()
     }
     
     @objc func submitTapped(sender: UIButton) {
@@ -179,7 +183,25 @@ class ViewController: UIViewController {
     }
 
     func loadWord() {
+        // load new word
         
+        // wipe out usedLetters
+        
+        // restart score and chances
+        
+        // display word
+        displayWord()
+        
+        // set used letters
+        let alphabets = "abcdefghijklmnopqrstuvwxyz"
+        
+        for (index, alphabet) in alphabets.enumerated() {
+            if allLetters.count == alphabets.count {
+                allLetters[index].text = String(alphabet).uppercased()
+            }
+            allLetters[index].isHidden = true
+        }
+ 
     }
     
     func displayWord() {
@@ -200,6 +222,7 @@ class ViewController: UIViewController {
         }
         
         promptWord = ""
+        
     }
     
     func gameOver(_ youWin: Bool) {
@@ -236,14 +259,15 @@ extension ViewController: UITextFieldDelegate {
 }
 
 /* TODO tomorrow
-1. work on the used words container
- a. create nested forloop to display letters used
+1. x work on the used words container
+ a. x create nested forloop to display letters used
  b. hide and unhide letters.
 2. add alerts for winning and losing.
 3. add restart functionality
 4. add score functionality
 5. add clear button funcionality
 6. update ui for landscape
+7. add GCD
  
  */
 
