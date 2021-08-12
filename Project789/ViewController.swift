@@ -22,7 +22,11 @@ class ViewController: UIViewController {
     var promptWord = ""
     
     var wrongAnswers = 0
-    var score = 0
+    var score = 0 {
+        didSet {
+            scoresLabel.text = "Score: \(score)"
+        }
+    }
     var chance = 2 {
         didSet {
             chancesLabel.text = "Chance(s): \(chance)"
@@ -37,16 +41,15 @@ class ViewController: UIViewController {
                 allWords = wordContents.components(separatedBy: "\n")
             }
         }
-        allWords.shuffle()
-        currentWord = allWords[0]
-        print("Current word: \(currentWord)")
+        
+//        shuffleWords()
         
         view = UIView()
         view.backgroundColor = .white
         
         chancesLabel = UILabel()
         chancesLabel.translatesAutoresizingMaskIntoConstraints = false
-        chancesLabel.text = "Chance: 7"
+        chancesLabel.text = "Chance(s): 7"
         chancesLabel.textAlignment = .right
         chancesLabel.font = UIFont.systemFont(ofSize: 20)
         view.addSubview(chancesLabel)
@@ -154,6 +157,12 @@ class ViewController: UIViewController {
         loadWord()
     }
     
+    func shuffleWords () {
+        allWords.shuffle()
+        currentWord = allWords[0]
+        print("Current word: \(currentWord)")
+    }
+    
     @objc func submitTapped(sender: UIButton) {
         submit()
     }
@@ -167,6 +176,7 @@ class ViewController: UIViewController {
         displayUsedLetters(submittedLetter)
         
         if currentWord.contains(submittedLetter) {
+            score += 1
             displayWord()
         } else {
             chance -= 1
@@ -196,10 +206,14 @@ class ViewController: UIViewController {
 
     func loadWord() {
         // load new word
+        shuffleWords()
         
         // wipe out usedLetters
+        usedLetters = []
         
         // restart score and chances
+        chance = 1
+        score = 0
         
         // display word
         displayWord()
@@ -237,13 +251,24 @@ class ViewController: UIViewController {
     }
     
     func gameOver(_ youWin: Bool) {
+        var status: String
+        var message: String
+        
         if youWin {
             print("GAME OVER! YOU WIN")
-            // add alert to restart
+            status  = "Win"
+            message = "Good Game!"
         } else {
             print("GAME OVER! YOU LOSE")
+            status = "Lose"
+            message = "You ran out of chances."
         }
         
+        let ac = UIAlertController(title: "You \(status)!", message: "\(message) Your score: \(score)", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "Restart", style: .default, handler: { [weak self] action in
+            self?.loadWord()
+        }))
+        present(ac, animated: true)
     }
 
 }
@@ -269,16 +294,17 @@ extension ViewController: UITextFieldDelegate {
     
 }
 
-/* TODO tomorrow
-1. x work on the used words container
- a. x create nested forloop to display letters used
- b. x hide and unhide letters.
+/* TODO
 2. add alerts for winning and losing.
 3. add restart functionality
 4. add score functionality
+ 4b. dont let chance reach negative
 5. add clear button funcionality
 6. update ui for landscape
 7. add GCD
- 
+8. bugs
+ a. dont let user submit a letter thats already been used
+ b. dont let user submit empty.
+ c. dismiss keyboard when tapped outside
  */
 
