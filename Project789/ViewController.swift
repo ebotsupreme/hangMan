@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     
     var wrongAnswers = 0
     var score = 0
-    var chance = 7 {
+    var chance = 2 {
         didSet {
             chancesLabel.text = "Chance: \(chance)"
         }
@@ -150,10 +150,13 @@ class ViewController: UIViewController {
             chance -= 1
         }
         
-        // add game over alert if chance == 0
-        
-        
         answersLabel.text = ""
+        
+        // add game over alert if chance == 0
+        if chance == 0 {
+            let youWin = false
+            gameOver(youWin)
+        }
     }
     
     @objc func clearTapped(sender: UIButton) {
@@ -177,15 +180,15 @@ class ViewController: UIViewController {
         currentWordLabel.text = promptWord.uppercased()
         
         if promptWord == currentWord {
-            let winner = true
-            gameOver(winner)
+            let youWin = true
+            gameOver(youWin)
         }
         
         promptWord = ""
     }
     
-    func gameOver(_ winner: Bool = false, _ loser: Bool = false) {
-        if winner {
+    func gameOver(_ youWin: Bool) {
+        if youWin {
             print("GAME OVER! YOU WIN")
             // add alert to restart
         } else {
