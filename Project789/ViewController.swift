@@ -170,6 +170,13 @@ class ViewController: UIViewController {
     func submit() {
         guard let submittedLetter = answersLabel.text?.lowercased() else { return }
         print("Submitted Letter: \(submittedLetter)", "typeOf: \(type(of: submittedLetter))")
+        
+        if submittedLetter == "" { return }
+        if usedLetters.contains(submittedLetter) {
+            answersLabel.text = ""
+            return
+        }
+        
         usedLetters.append(submittedLetter)
         print("usedLetters: \(usedLetters)")
         
@@ -205,17 +212,13 @@ class ViewController: UIViewController {
     }
 
     func loadWord() {
-        // load new word
         shuffleWords()
         
-        // wipe out usedLetters
         usedLetters = []
         
-        // restart score and chances
         chance = 1
         score = 0
         
-        // display word
         displayWord()
         
         // set used letters
@@ -295,7 +298,6 @@ extension ViewController: UITextFieldDelegate {
 }
 
 /* TODO
-5. add clear button funcionality
 6. update ui for landscape
 7. add GCD
 8. bugs
